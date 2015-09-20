@@ -1,0 +1,1 @@
+A place for art assets and mockups.
