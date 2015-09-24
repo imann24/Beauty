@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour {
 	public float JumpHeight = 1000;
 
 	Rigidbody2D rigibody;
+	BoxCollider2D collider;
+
 	bool touchingGround = false;
 	bool touchingLadder = false;
 	// Use this for initialization
@@ -30,6 +32,10 @@ public class PlayerController : MonoBehaviour {
 			Movement(Global.Direction.Right);
 		} else if (Input.GetKey(KeyCode.W)) {
 			Movement(Global.Direction.Up);
+		} else if (Input.GetKey(KeyCode.S)) {
+			Movement(Global.Direction.Down);
+		} else {
+			Movement(Global.Direction.None);
 		}
 	}
 
@@ -40,6 +46,7 @@ public class PlayerController : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D collision) {
 		if (collision.gameObject.name.Contains(Global.LADDER)) {
 			touchingLadder = true;
+			collider.isTrigger = true;
 		}
 	}
 
@@ -50,16 +57,28 @@ public class PlayerController : MonoBehaviour {
 	void OnTriggerExit2D (Collider2D collision) {
 		if (collision.gameObject.name.Contains(Global.LADDER)) {
 			touchingLadder = false;
+			collider.isTrigger = false;
 		}
 	}
 
 	void Movement (Global.Direction direction) {
+
+
+		rigibody.isKinematic = false;
+
 		if (direction == Global.Direction.Left) {
 			rigibody.AddForce(new Vector2(-PlayerAcceleration, 0));
 		} else if (direction == Global.Direction.Right) {
 			rigibody.AddForce(new Vector2(PlayerAcceleration, 0));
 		} else if (direction == Global.Direction.Up && touchingLadder) {
 			rigibody.AddForce(new Vector2(0, PlayerAcceleration));
+		} else if (direction == Global.Direction.Down) {
+			rigibody.AddForce(new Vector2(0, -PlayerAcceleration));
+		} else if (direction == Global.Direction.None) {
+			if (touchingLadder || touchingGround) {
+				rigibody.velocity = new Vector2(0, 0);
+			}
+			rigibody.isKinematic = touchingLadder;
 		}
 		rigibody.velocity = new Vector2(Mathf.Clamp(rigibody.velocity.x, -MaxPlayerSpeed, MaxPlayerSpeed), Mathf.Clamp(rigibody.velocity.y, -MaxPlayerSpeed, MaxPlayerSpeed));
 	}
@@ -72,5 +91,6 @@ public class PlayerController : MonoBehaviour {
 
 	void EstablishReferences () {
 		rigibody = GetComponent<Rigidbody2D>();
+		collider = GetComponent<BoxCollider2D>();
 	}
 }
