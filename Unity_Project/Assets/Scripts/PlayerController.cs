@@ -4,13 +4,17 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 	public float PlayerAcceleration = 50;
 	public float MaxPlayerSpeed = 200;
+	public float ClimbSpeed;
 	public float JumpHeight = 1000;
 
 	Rigidbody2D rigibody;
-	BoxCollider2D collider;
+	BoxCollider2D myCollider;
 
 	bool touchingGround = false;
 	bool touchingLadder = false;
+
+	Item currentItemHoveringOver; 
+
 	// Use this for initialization
 	void Start () {
 		EstablishReferences();
@@ -24,7 +28,9 @@ public class PlayerController : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W)) {
 			Jump();
 		}*/
-
+		if (Input.GetKey(KeyCode.Space) && currentItemHoveringOver != null) {
+			Notifications.Instance.SetNotification(currentItemHoveringOver.Message, Notifications.Notification.BottomScreen);
+		}
 
 		if (Input.GetKey(KeyCode.A)) {
 			Movement(Global.Direction.Left);
@@ -41,12 +47,20 @@ public class PlayerController : MonoBehaviour {
 
 	void OnCollisionEnter2D (Collision2D collision) {
 		touchingGround = true;
+		touchingLadder = false;
+		rigibody.velocity = new Vector2(0, 0);
 	}
 
-	void OnTriggerEnter2D (Collider2D collision) {
-		if (collision.gameObject.name.Contains(Global.LADDER)) {
+	void OnTriggerEnter2D (Collider2D collider) {
+		if (collider.gameObject.name.Contains(Global.LADDER)) {
 			touchingLadder = true;
-			collider.isTrigger = true;
+			myCollider.isTrigger = true;
+		} else if (collider.gameObject.name.Contains(Global.PLATFORM) && touchingGround == false ) {
+			myCollider.isTrigger = false;
+			touchingLadder = false;
+			touchingGround = true;
+		} else if (collider.gameObject.name.Contains(Global.ITEM)) {
+			currentItemHoveringOver = DetectItem(collider);
 		}
 	}
 
@@ -54,10 +68,13 @@ public class PlayerController : MonoBehaviour {
 		touchingGround = false;
 	}
 
-	void OnTriggerExit2D (Collider2D collision) {
-		if (collision.gameObject.name.Contains(Global.LADDER)) {
+	void OnTriggerExit2D (Collider2D collider) {
+		if (collider.gameObject.name.Contains(Global.LADDER)) {
 			touchingLadder = false;
-			collider.isTrigger = false;
+			myCollider.isTrigger = false;
+		} else if (collider.gameObject.name.Contains(Global.ITEM)) {
+			Notifications.Instance.SetNotification("", Notifications.Notification.BottomScreen);
+			currentItemHoveringOver = null;
 		}
 	}
 
@@ -71,15 +88,18 @@ public class PlayerController : MonoBehaviour {
 		} else if (direction == Global.Direction.Right) {
 			rigibody.AddForce(new Vector2(PlayerAcceleration, 0));
 		} else if (direction == Global.Direction.Up && touchingLadder) {
-			rigibody.AddForce(new Vector2(0, PlayerAcceleration));
+			rigibody.AddForce(new Vector2(0, ClimbSpeed));
 		} else if (direction == Global.Direction.Down) {
-			rigibody.AddForce(new Vector2(0, -PlayerAcceleration));
+			rigibody.AddForce(new Vector2(0, -ClimbSpeed));
 		} else if (direction == Global.Direction.None) {
 			if (touchingLadder || touchingGround) {
 				rigibody.velocity = new Vector2(0, 0);
 			}
+
 			rigibody.isKinematic = touchingLadder;
 		}
+
+
 		rigibody.velocity = new Vector2(Mathf.Clamp(rigibody.velocity.x, -MaxPlayerSpeed, MaxPlayerSpeed), Mathf.Clamp(rigibody.velocity.y, -MaxPlayerSpeed, MaxPlayerSpeed));
 	}
 
@@ -91,6 +111,14 @@ public class PlayerController : MonoBehaviour {
 
 	void EstablishReferences () {
 		rigibody = GetComponent<Rigidbody2D>();
-		collider = GetComponent<BoxCollider2D>();
+		myCollider = GetComponent<BoxCollider2D>();
+
+		Global.Player = gameObject;
+		Global.StartPos = transform.position;
+	}
+
+	Item DetectItem (Collider2D collider) {
+		Notifications.Instance.SetNotification(Global.ITEM_INTERACTION_PROMPT, Notifications.Notification.BottomScreen);
+		return collider.GetComponent<Item>();
 	}
 }

@@ -12,11 +12,11 @@ public class CharacterTracker : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		transform.position = FollowPlayer(Player.transform.position);
+		transform.position = FollowPlayer(Player.transform.position, false);
 	}
 
 
-	Vector3 FollowPlayer (Vector3 playerPos) {
-		return new Vector3(playerPos.x, playerPos.y, playerPos.z + zOffset);
+	Vector3 FollowPlayer (Vector3 playerPos, bool trackHorizontalMovement ) {
+		return new Vector3(trackHorizontalMovement?playerPos.x:transform.position.x, playerPos.y, playerPos.z + zOffset);
 	}
 }
