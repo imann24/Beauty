@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Global {
 
+	public enum Scenes {Id, Ego, SuperEgo};
+
 	public enum Direction {Left, Right, Up, Down, None};
 
 	// Used to identify game objects
