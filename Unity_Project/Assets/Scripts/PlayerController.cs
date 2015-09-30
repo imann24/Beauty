@@ -56,23 +56,23 @@ public class PlayerController : MonoBehaviour {
 		
 		State primaryState = State.Stoppped;
 
-		if (Input.GetKey(KeyCode.W)) {
+		if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
 			primaryState = State.WalkingUp;
 			Movement(Global.Direction.Up, rigibody.velocity.x);
-		} else if (Input.GetKey(KeyCode.S)) {
+		} else if (Input.GetKey(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
 			primaryState = State.WalkingDown;
 			Movement(Global.Direction.Down, rigibody.velocity.x);
 		} 
 		
-		if (Input.GetKey(KeyCode.A)) {
+		if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
 			primaryState = State.WalkingLeft;
 			Movement(Global.Direction.Left, rigibody.velocity.y);
-		} else if (Input.GetKey(KeyCode.D)) {
+		} else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
 			primaryState = State.WalkingRight;
 			Movement(Global.Direction.Right, rigibody.velocity.y);
 		} 
 
-		if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S)) {
+		if (primaryState != State.Stoppped) {
 			noMovement = false;
 			if (!IsWalking) {
 				IsWalking = true;
@@ -176,6 +176,8 @@ public class PlayerController : MonoBehaviour {
 		Global.StartPos = transform.position;
 
 		currentState = State.Stoppped;
+
+		rigibody.gravityScale = Global.GRAVITY_ON?1:0;
 
 		InitializeDictionary();
 	}

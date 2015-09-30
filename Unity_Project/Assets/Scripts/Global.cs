@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class Global {
+	public static bool GRAVITY_ON;
 
 	public enum Scenes {Id, Ego, SuperEgo};
 
