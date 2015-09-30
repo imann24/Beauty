@@ -6,6 +6,7 @@ public class Global {
 	public enum Scenes {Id, Ego, SuperEgo};
 
 	public enum Direction {Left, Right, Up, Down, None};
+	public const int DIRECTION_COUNT = 5;
 
 	// Used to identify game objects
 	public const string LADDER = "Ladder";

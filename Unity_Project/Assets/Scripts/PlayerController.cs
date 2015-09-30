@@ -1,11 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour {
+	public static Dictionary <Global.Direction, State> DirectionToState = new Dictionary<Global.Direction, State>();
+
+	public delegate void WalkingAction (State newState);
+	public static event WalkingAction OnWalkChange;
+
 	public float PlayerAcceleration = 50;
 	public float MaxPlayerSpeed = 200;
 	public float ClimbSpeed;
 	public float JumpHeight = 1000;
+	public bool RigibodyDisabled = false;
+
+	// state
+	public bool IsWalking {get; private set;}
 
 	Rigidbody2D rigibody;
 	BoxCollider2D myCollider;
@@ -20,8 +30,9 @@ public class PlayerController : MonoBehaviour {
 	const string LEFT_TRIGGER = "WalkingLeft";
 	const string RIGHT_TRIGGER = "WalkingRight";
 
-	public enum State {WalkingLeft, WalkingRight, Stoppped};
+	public enum State {WalkingLeft, WalkingRight, WalkingUp, WalkingDown, Stoppped};
 	State currentState;
+	Global.Direction Facing = Global.Direction.Right;
 
 	// Use this for initialization
 	void Start () {
@@ -40,15 +51,45 @@ public class PlayerController : MonoBehaviour {
 			Notifications.Instance.SetNotification(currentItemHoveringOver.Message, Notifications.Notification.BottomScreen);
 		}
 
-		if (Input.GetKey(KeyCode.A)) {
-			Movement(Global.Direction.Left);
-		} else if (Input.GetKey(KeyCode.D)) {
-			Movement(Global.Direction.Right);
-		} else if (Input.GetKey(KeyCode.W)) {
-			Movement(Global.Direction.Up);
+		bool noMovement = true;
+
+		
+		State primaryState = State.Stoppped;
+
+		if (Input.GetKey(KeyCode.W)) {
+			primaryState = State.WalkingUp;
+			Movement(Global.Direction.Up, rigibody.velocity.x);
 		} else if (Input.GetKey(KeyCode.S)) {
-			Movement(Global.Direction.Down);
+			primaryState = State.WalkingDown;
+			Movement(Global.Direction.Down, rigibody.velocity.x);
+		} 
+		
+		if (Input.GetKey(KeyCode.A)) {
+			primaryState = State.WalkingLeft;
+			Movement(Global.Direction.Left, rigibody.velocity.y);
+		} else if (Input.GetKey(KeyCode.D)) {
+			primaryState = State.WalkingRight;
+			Movement(Global.Direction.Right, rigibody.velocity.y);
+		} 
+
+		if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S)) {
+			noMovement = false;
+			if (!IsWalking) {
+				IsWalking = true;
+				if (OnWalkChange != null) {
+					OnWalkChange(primaryState);
+				}
+			}
 		} else {
+			if (IsWalking) {
+				IsWalking = false;
+				if (OnWalkChange != null) {
+					OnWalkChange(primaryState);
+				}
+			}
+		}
+
+		if (noMovement) {
 			Movement(Global.Direction.None);
 		}
 	}
@@ -86,29 +127,34 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	void Movement (Global.Direction direction) {
+	void Movement (Global.Direction direction, float otherDirectionSpeed = 0) {
 
 
 		rigibody.isKinematic = false;
 
-		if (direction == Global.Direction.Left) {
-			rigibody.velocity = new Vector2(-PlayerAcceleration, 0);
+		if (direction == (Facing = Global.Direction.Left)) {
+			rigibody.velocity = new Vector2(-PlayerAcceleration, otherDirectionSpeed);
 			UpdateState(State.WalkingLeft);
-		} else if (direction == Global.Direction.Right) {
-			rigibody.velocity = new Vector2(PlayerAcceleration, 0);
+		} else if (direction == (Facing = Global.Direction.Right)) {
+			rigibody.velocity = new Vector2(PlayerAcceleration, otherDirectionSpeed);
 			UpdateState(State.WalkingRight);
-		} else if (direction == Global.Direction.Up && touchingLadder) {
-			rigibody.AddForce(new Vector2(0, ClimbSpeed));
+		} else if (direction == Global.Direction.Up) {
+			rigibody.velocity = new Vector2(otherDirectionSpeed, PlayerAcceleration);
+			UpdateState(DirectionToState[Facing]);
 		} else if (direction == Global.Direction.Down) {
-			rigibody.AddForce(new Vector2(0, -ClimbSpeed));
+			rigibody.velocity = new Vector2(otherDirectionSpeed, -PlayerAcceleration);
+			UpdateState(DirectionToState[Facing]);
 		} else if (direction == Global.Direction.None) {
-			if (touchingLadder || touchingGround) {
-				rigibody.velocity = new Vector2(0, 0);
-			}
+
+			rigibody.velocity = new Vector2(0, 0);
 
 			UpdateState(State.Stoppped);
 
 			rigibody.isKinematic = touchingLadder;
+
+			if (RigibodyDisabled) {
+				rigibody.Sleep();
+			}
 		}
 
 
@@ -130,6 +176,8 @@ public class PlayerController : MonoBehaviour {
 		Global.StartPos = transform.position;
 
 		currentState = State.Stoppped;
+
+		InitializeDictionary();
 	}
 	
 	void UpdateState (State updatedState) {
@@ -152,5 +200,14 @@ public class PlayerController : MonoBehaviour {
 	Item DetectItem (Collider2D collider) {
 		Notifications.Instance.SetNotification(Global.ITEM_INTERACTION_PROMPT, Notifications.Notification.BottomScreen);
 		return collider.GetComponent<Item>();
+	}
+
+	// Creates the dictionary of enums to map between directions and states
+	public static void InitializeDictionary () {
+		if (DirectionToState.Count == 0) {
+			for (int i = 0; i < Global.DIRECTION_COUNT; i++) {
+				DirectionToState.Add((Global.Direction)i, (State)i);
+			}
+		}
 	}
 }
