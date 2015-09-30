@@ -9,11 +9,19 @@ public class PlayerController : MonoBehaviour {
 
 	Rigidbody2D rigibody;
 	BoxCollider2D myCollider;
+	Animator animator;
 
 	bool touchingGround = false;
 	bool touchingLadder = false;
 
 	Item currentItemHoveringOver; 
+
+	const string STOP_TRIGGER = "Stopping";
+	const string LEFT_TRIGGER = "WalkingLeft";
+	const string RIGHT_TRIGGER = "WalkingRight";
+
+	public enum State {WalkingLeft, WalkingRight, Stoppped};
+	State currentState;
 
 	// Use this for initialization
 	void Start () {
@@ -84,9 +92,11 @@ public class PlayerController : MonoBehaviour {
 		rigibody.isKinematic = false;
 
 		if (direction == Global.Direction.Left) {
-			rigibody.AddForce(new Vector2(-PlayerAcceleration, 0));
+			rigibody.velocity = new Vector2(-PlayerAcceleration, 0);
+			UpdateState(State.WalkingLeft);
 		} else if (direction == Global.Direction.Right) {
-			rigibody.AddForce(new Vector2(PlayerAcceleration, 0));
+			rigibody.velocity = new Vector2(PlayerAcceleration, 0);
+			UpdateState(State.WalkingRight);
 		} else if (direction == Global.Direction.Up && touchingLadder) {
 			rigibody.AddForce(new Vector2(0, ClimbSpeed));
 		} else if (direction == Global.Direction.Down) {
@@ -95,6 +105,8 @@ public class PlayerController : MonoBehaviour {
 			if (touchingLadder || touchingGround) {
 				rigibody.velocity = new Vector2(0, 0);
 			}
+
+			UpdateState(State.Stoppped);
 
 			rigibody.isKinematic = touchingLadder;
 		}
@@ -112,9 +124,29 @@ public class PlayerController : MonoBehaviour {
 	void EstablishReferences () {
 		rigibody = GetComponent<Rigidbody2D>();
 		myCollider = GetComponent<BoxCollider2D>();
+		animator = GetComponent<Animator>();
 
 		Global.Player = gameObject;
 		Global.StartPos = transform.position;
+
+		currentState = State.Stoppped;
+	}
+	
+	void UpdateState (State updatedState) {
+		if (updatedState != currentState) {
+			currentState = updatedState;
+			UpdateAnimation(currentState);
+		}
+	}
+
+	void UpdateAnimation (State newState) {
+		if (newState == State.Stoppped) {
+			animator.SetTrigger(STOP_TRIGGER);
+		} else if (newState == State.WalkingLeft) {
+			animator.SetTrigger(LEFT_TRIGGER);
+		} else if (newState == State.WalkingRight) {
+			animator.SetTrigger(RIGHT_TRIGGER);
+		}
 	}
 
 	Item DetectItem (Collider2D collider) {

@@ -8,6 +8,8 @@ public class AudioManager : MonoBehaviour {
 	public AudioClip IdMusic;
 
 	public AudioManager Instance; 
+
+	private bool suppressOnLevelLoad;
 	// Use this for initialization
 	void Awake () {
 		// Singleton Implementation 
@@ -15,6 +17,7 @@ public class AudioManager : MonoBehaviour {
 			Instance = this;
 			DontDestroyOnLoad(gameObject);
 		} else {
+			suppressOnLevelLoad = true;
 			Destroy(gameObject);
 		}
 	}
@@ -23,7 +26,11 @@ public class AudioManager : MonoBehaviour {
 		SetMusic(Global.Scenes.Id);
 	}
 
-	void OnLevelLoad (int level) {
+	void OnLevelWasLoaded (int level) {
+		if (suppressOnLevelLoad) {
+			return;
+		}
+
 		SetMusic((Global.Scenes) level);
 	}
 
