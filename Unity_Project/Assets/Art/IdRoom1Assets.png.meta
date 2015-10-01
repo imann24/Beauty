@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 1a9c3f4ce0f004f3a939f42674c59185
-timeCreated: 1443481547
+timeCreated: 1443731950
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -9,6 +9,7 @@ TextureImporter:
     21300004: IdRoom1Assets_2
     21300006: IdRoom1Assets_3
     21300008: IdRoom1Assets_4
+    21300010: IdRoom1Assets_5
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -62,7 +63,7 @@ TextureImporter:
         width: 72
         height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: IdRoom1Assets_1
       rect:
@@ -72,7 +73,7 @@ TextureImporter:
         width: 66
         height: 85
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: IdRoom1Assets_2
       rect:
@@ -82,7 +83,7 @@ TextureImporter:
         width: 77
         height: 34
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: IdRoom1Assets_3
       rect:
@@ -92,7 +93,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: IdRoom1Assets_4
       rect:
@@ -102,7 +103,17 @@ TextureImporter:
         width: 17
         height: 41
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: IdRoom1Assets_5
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 250
+        width: 39
+        height: 14
+      alignment: 0
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

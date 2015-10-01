@@ -16,6 +16,10 @@ public class CSVReader : MonoBehaviour {
 
 	// Returns a 2d array of the CSV
 	public string [][] ParseCSV (TextAsset CSV) {
+		if (CSV == null) {
+			return null;
+		}
+
 		string[] CSVByLine = CSV.text.Split('\n');
 		string[][] CSVByCell = new string[CSVByLine.Length][];
 
@@ -24,5 +28,9 @@ public class CSVReader : MonoBehaviour {
 		}
 
 		return CSVByCell;
+	}
+
+	public string [][] ParseCSV () {
+		return ParseCSV(CSV);
 	}
 }
