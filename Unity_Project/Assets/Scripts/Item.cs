@@ -1,15 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Item : MonoBehaviour {
-	public string Message = "You have just found an item";
-	// Use this for initialization
+	public static Dictionary<string, Item> AllItems = new Dictionary<string, Item>();
+	public string [] Messages;
+	private int currentMessageIndex = 0;
+
 	void Start () {
-	
+		AllItems.Add(gameObject.name, this);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	void OnDestroy () {
+		AllItems.Remove(gameObject.name);
+	}
+
+	public string ReadMessage () {
+		return Messages[currentMessageIndex++%Messages.Length];
+	}
+
+	public void SetMessages (string [] messages) {
+		Messages = messages;
 	}
 }

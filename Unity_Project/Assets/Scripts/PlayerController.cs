@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour {
 			Jump();
 		}*/
 		if (Input.GetKey(KeyCode.Space) && currentItemHoveringOver != null) {
-			Notifications.Instance.SetNotification(currentItemHoveringOver.Message, Notifications.Notification.BottomScreen);
+			Notifications.Instance.SetNotification(currentItemHoveringOver.ReadMessage(), Notifications.Notification.BottomScreen);
 		}
 
 		bool noMovement = true;
