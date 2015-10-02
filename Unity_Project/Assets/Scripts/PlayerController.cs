@@ -59,15 +59,20 @@ public class PlayerController : MonoBehaviour {
 		if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
 			primaryState = State.WalkingUp;
 			Movement(Global.Direction.Up, rigibody.velocity.x);
-		} else if (Input.GetKey(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
+		} else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
 			primaryState = State.WalkingDown;
 			Movement(Global.Direction.Down, rigibody.velocity.x);
 		} 
+
+
+
 		
-		if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
+		if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) && 
+		    (!Input.GetKeyDown(KeyCode.D) && !Input.GetKeyDown(KeyCode.RightArrow))) {
 			primaryState = State.WalkingLeft;
 			Movement(Global.Direction.Left, rigibody.velocity.y);
-		} else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
+		} else if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) &&
+		           (!Input.GetKeyDown(KeyCode.A) && !Input.GetKeyDown(KeyCode.LeftArrow))) {
 			primaryState = State.WalkingRight;
 			Movement(Global.Direction.Right, rigibody.velocity.y);
 		} 
@@ -132,12 +137,14 @@ public class PlayerController : MonoBehaviour {
 
 		rigibody.isKinematic = false;
 
-		if (direction == (Facing = Global.Direction.Left)) {
+		if (direction == Global.Direction.Left) {
 			rigibody.velocity = new Vector2(-PlayerAcceleration, otherDirectionSpeed);
 			UpdateState(State.WalkingLeft);
-		} else if (direction == (Facing = Global.Direction.Right)) {
+			Facing = Global.Direction.Left;
+		} else if (direction == Global.Direction.Right) {
 			rigibody.velocity = new Vector2(PlayerAcceleration, otherDirectionSpeed);
 			UpdateState(State.WalkingRight);
+			Facing = Global.Direction.Right;
 		} else if (direction == Global.Direction.Up) {
 			rigibody.velocity = new Vector2(otherDirectionSpeed, PlayerAcceleration);
 			UpdateState(DirectionToState[Facing]);
@@ -158,7 +165,8 @@ public class PlayerController : MonoBehaviour {
 		}
 
 
-		rigibody.velocity = new Vector2(Mathf.Clamp(rigibody.velocity.x, -MaxPlayerSpeed, MaxPlayerSpeed), Mathf.Clamp(rigibody.velocity.y, -MaxPlayerSpeed, MaxPlayerSpeed));
+		rigibody.velocity = new Vector2(Mathf.Clamp(rigibody.velocity.x, -MaxPlayerSpeed, MaxPlayerSpeed),
+		                                Mathf.Clamp(rigibody.velocity.y, -MaxPlayerSpeed, MaxPlayerSpeed));
 	}
 
 	void Jump () {
@@ -185,11 +193,12 @@ public class PlayerController : MonoBehaviour {
 	void UpdateState (State updatedState) {
 		if (updatedState != currentState) {
 			currentState = updatedState;
-			UpdateAnimation(currentState);
+			UpdateAnimation(updatedState);
 		}
 	}
 
 	void UpdateAnimation (State newState) {
+		Debug.Log("Changing the animation to " + newState);
 		if (newState == State.Stoppped) {
 			animator.SetTrigger(STOP_TRIGGER);
 		} else if (newState == State.WalkingLeft) {

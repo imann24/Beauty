@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Global {
 	public static bool GRAVITY_ON;
+	public static float GLOW_DISTANCE = 5.0f;
 
 	public enum Scenes {Id, Ego, SuperEgo};
 

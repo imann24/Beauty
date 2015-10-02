@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 
 public class ItemController : MonoBehaviour {
+	public static Item ActiveItem;
 
 	// Use this for initialization
 	void Start () {
