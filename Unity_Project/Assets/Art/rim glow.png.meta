@@ -1,22 +1,19 @@
 fileFormatVersion: 2
-guid: 1a9c3f4ce0f004f3a939f42674c59185
-timeCreated: 1443999346
+guid: 83ba5c3c7ab6648ecbcce306b446e409
+timeCreated: 1444015568
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: IdRoom1Assets_0
-    21300002: IdRoom1Assets_1
-    21300004: IdRoom1Assets_2
-    21300006: IdRoom1Assets_3
-    21300008: IdRoom1Assets_4
-    21300010: IdRoom1Assets_5
-    21300012: IdRoom1Assets_8
-    21300014: IdRoom1Assets_9
-    21300016: IdRoom1Assets_11
-    21300018: IdRoom1Assets_12
-    21300020: IdRoom1Assets_17
-    21300022: IdRoom1Assets_18
-    21300024: IdRoom1Assets_19
+    21300000: rim glow_1
+    21300002: rim glow_2
+    21300004: rim glow_3
+    21300006: rim glow_7
+    21300008: rim glow_11
+    21300010: rim glow_13
+    21300012: rim glow_18
+    21300014: rim glow_16
+    21300016: rim glow_6
+    21300018: rim glow_17
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -62,123 +59,103 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites:
-    - name: IdRoom1Assets_0
+    - name: rim glow_1
       rect:
         serializedVersion: 2
-        x: 15
-        y: 348
-        width: 72
-        height: 65
+        x: 287
+        y: 302
+        width: 88
+        height: 85
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_3
+    - name: rim glow_2
       rect:
         serializedVersion: 2
-        x: 124
-        y: 304
-        width: 92
-        height: 95
+        x: 417
+        y: 289
+        width: 74
+        height: 83
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_4
+    - name: rim glow_3
       rect:
         serializedVersion: 2
-        x: 269
-        y: 315
-        width: 77
-        height: 34
+        x: 0
+        y: 323
+        width: 117
+        height: 101
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_5
+    - name: rim glow_7
       rect:
         serializedVersion: 2
-        x: 444
-        y: 326
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_8
-      rect:
-        serializedVersion: 2
-        x: 263
-        y: 276
-        width: 10
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_9
-      rect:
-        serializedVersion: 2
-        x: 162
-        y: 221
-        width: 26
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_11
-      rect:
-        serializedVersion: 2
-        x: 388
-        y: 213
-        width: 57
-        height: 35
+        x: 360
+        y: 180
+        width: 74
+        height: 85
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_12
+    - name: rim glow_11
       rect:
         serializedVersion: 2
-        x: 495
-        y: 225
-        width: 17
-        height: 41
+        x: 454
+        y: 192
+        width: 94
+        height: 103
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_17
+    - name: rim glow_13
       rect:
         serializedVersion: 2
-        x: 53
-        y: 194
-        width: 57
-        height: 96
+        x: 171
+        y: 179
+        width: 118
+        height: 107
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_18
+    - name: rim glow_18
       rect:
         serializedVersion: 2
-        x: 32
-        y: 120
-        width: 46
-        height: 22
+        x: 28
+        y: 170
+        width: 120
+        height: 135
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_19
+    - name: rim glow_16
       rect:
         serializedVersion: 2
-        x: 210
-        y: 115
-        width: 30
-        height: 33
+        x: 11
+        y: 88
+        width: 93
+        height: 77
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: IdRoom1Assets_1
+    - name: rim glow_6
       rect:
         serializedVersion: 2
-        x: 183
-        y: 220
-        width: 61
-        height: 40
+        x: 175
+        y: 80
+        width: 97
+        height: 114
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: rim glow_17
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 300
+        width: 103
+        height: 113
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}

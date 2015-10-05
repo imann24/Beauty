@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CSVReader : MonoBehaviour {
 	public TextAsset CSV;
+	public TextAsset TSV;
 	public static CSVReader Instance;
 	// Use this for initialization
 	void Start () {
@@ -14,8 +15,12 @@ public class CSVReader : MonoBehaviour {
 	
 	}
 
+	public string [][] ParseTSV (TextAsset TSV) {
+		return ParseCSV(TSV, '\t');
+	}
+
 	// Returns a 2d array of the CSV
-	public string [][] ParseCSV (TextAsset CSV) {
+	public string [][] ParseCSV (TextAsset CSV, char separator = ',') {
 		if (CSV == null) {
 			return null;
 		}
@@ -24,7 +29,7 @@ public class CSVReader : MonoBehaviour {
 		string[][] CSVByCell = new string[CSVByLine.Length][];
 
 		for (int i = 0; i < CSVByLine.Length; i++) {
-			CSVByCell[i] = Utility.SplitString(CSVByLine[i], ',');
+			CSVByCell[i] = Utility.SplitString(CSVByLine[i], separator);
 		}
 
 		return CSVByCell;
@@ -32,5 +37,9 @@ public class CSVReader : MonoBehaviour {
 
 	public string [][] ParseCSV () {
 		return ParseCSV(CSV);
+	}
+
+	public string [][] ParseTSV () {
+		return ParseTSV(TSV);
 	}
 }

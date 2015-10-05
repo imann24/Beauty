@@ -6,6 +6,9 @@ using System.Collections;
 
 public class MessageComponent : MonoBehaviour {
 
+	public delegate void MessageReadAction (bool complete);
+	public static MessageReadAction OnMessageRead;
+
 	CanvasGroup canvasGroup;
 	Text messageText;
 
@@ -30,7 +33,14 @@ public class MessageComponent : MonoBehaviour {
 		if (currentItem != null) {
 			showMessage();
 			string nextMessage = currentItem.ReadMessage();
-			if (currentItem.LastMessage(messageText.text) || revealingTheText) {
+			if (!string.IsNullOrEmpty(messageText.text) && currentItem.LastMessage(messageText.text) || revealingTheText) {
+				if (OnMessageRead != null && !revealingTheText) {
+					OnMessageRead(true);
+					hideMessage();
+					messageText.text = "";
+					currentItem.ResetCurrentMessage();
+				}
+
 				return;
 			}
 			currentMessage = nextMessage;
@@ -65,6 +75,9 @@ public class MessageComponent : MonoBehaviour {
 	}
 
 	void showMessage () {
+		if (OnMessageRead != null) {
+			OnMessageRead(false);
+		}
 		StartCoroutine(LerpCanvasOpacity(1.0f));
 	}
 
@@ -113,6 +126,5 @@ public class MessageComponent : MonoBehaviour {
 			yield return new WaitForSeconds(Time.deltaTime / speed);
 		}
 		revealingTheText = false;
-		NextMessage();
 	}
 }

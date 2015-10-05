@@ -3,7 +3,7 @@ using System.Collections;
 
 public class MessageController : MonoBehaviour {
 	public static MessageController Instance;
-	public MessageComponent TopOfScreenMessage;
+	public MessageComponent BottomOfScreenMessage;
 	public enum Screen {Top, Bottom, Left, Right, Center};
 
 	// Use this for initialization
@@ -14,13 +14,13 @@ public class MessageController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.Space)) {
-			AdvanceMessage(Screen.Top);
+			AdvanceMessage(Screen.Bottom);
 		}
 	}
 
 	public void AdvanceMessage (Screen screenLocation) {
-		if (screenLocation == Screen.Top) {
-			TopOfScreenMessage.NextMessage();
+		if (screenLocation == Screen.Bottom) {
+			BottomOfScreenMessage.NextMessage();
 		}
 	}
 }

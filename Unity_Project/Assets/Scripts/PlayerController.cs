@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour {
 
 	// state
 	public bool IsWalking {get; private set;}
+	public bool CanMove {get; private set;}
 
 	Rigidbody2D rigibody;
 	BoxCollider2D myCollider;
@@ -37,20 +39,15 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		EstablishReferences();
+		SubscribeEvents();
 	}
-
-
+	
+	void OnDestroy () {
+		UnsubscribeEvents();
+	}
 
 	// Update is called once per frame
 	void Update () {
-		/*
-		if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W)) {
-			Jump();
-		}*/
-		if (Input.GetKey(KeyCode.Space) && currentItemHoveringOver != null) {
-			Notifications.Instance.SetNotification(currentItemHoveringOver.ReadMessage(), Notifications.Notification.BottomScreen);
-		}
-
 		bool noMovement = true;
 
 		
@@ -67,15 +64,19 @@ public class PlayerController : MonoBehaviour {
 
 
 		
-		if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) && 
-		    (!Input.GetKeyDown(KeyCode.D) && !Input.GetKeyDown(KeyCode.RightArrow))) {
-			primaryState = State.WalkingLeft;
-			Movement(Global.Direction.Left, rigibody.velocity.y);
-		} else if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) &&
-		           (!Input.GetKeyDown(KeyCode.A) && !Input.GetKeyDown(KeyCode.LeftArrow))) {
-			primaryState = State.WalkingRight;
-			Movement(Global.Direction.Right, rigibody.velocity.y);
+		if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) {
+			Facing = Global.Direction.Left;
+		}
+
+		if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) {
+			Facing = Global.Direction.Right;
 		} 
+
+		if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)) {
+			primaryState = DirectionToState[Facing];
+			Movement(Facing, rigibody.velocity.y);
+		}
+		     
 
 		if (primaryState != State.Stoppped) {
 			noMovement = false;
@@ -133,18 +134,18 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void Movement (Global.Direction direction, float otherDirectionSpeed = 0) {
-
+		if (!CanMove) {
+			return;
+		}
 
 		rigibody.isKinematic = false;
 
 		if (direction == Global.Direction.Left) {
 			rigibody.velocity = new Vector2(-PlayerAcceleration, otherDirectionSpeed);
 			UpdateState(State.WalkingLeft);
-			Facing = Global.Direction.Left;
 		} else if (direction == Global.Direction.Right) {
 			rigibody.velocity = new Vector2(PlayerAcceleration, otherDirectionSpeed);
 			UpdateState(State.WalkingRight);
-			Facing = Global.Direction.Right;
 		} else if (direction == Global.Direction.Up) {
 			rigibody.velocity = new Vector2(otherDirectionSpeed, PlayerAcceleration);
 			UpdateState(DirectionToState[Facing]);
@@ -176,6 +177,8 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void EstablishReferences () {
+		CanMove = true;
+
 		rigibody = GetComponent<Rigidbody2D>();
 		myCollider = GetComponent<BoxCollider2D>();
 		animator = GetComponent<Animator>();
@@ -192,13 +195,13 @@ public class PlayerController : MonoBehaviour {
 	
 	void UpdateState (State updatedState) {
 		if (updatedState != currentState) {
+			Debug.Log("Changed direction to " + updatedState);
 			currentState = updatedState;
 			UpdateAnimation(updatedState);
 		}
 	}
 
 	void UpdateAnimation (State newState) {
-		Debug.Log("Changing the animation to " + newState);
 		if (newState == State.Stoppped) {
 			animator.SetTrigger(STOP_TRIGGER);
 		} else if (newState == State.WalkingLeft) {
@@ -208,9 +211,27 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	void TogglePlayerMovement (bool enabled) {
+		CanMove = enabled;
+		if (!enabled) {
+			rigibody.velocity = new Vector2(0, 0);
+			UpdateState (State.Stoppped);
+		}
+	}
+	
 	Item DetectItem (Collider2D collider) {
 		Notifications.Instance.SetNotification(Global.ITEM_INTERACTION_PROMPT, Notifications.Notification.BottomScreen);
 		return collider.GetComponent<Item>();
+	}
+
+	void SubscribeEvents () {
+		SceneTransition.OnTransitionBegin += (fadeToBlack) => TogglePlayerMovement(!fadeToBlack);
+		MessageComponent.OnMessageRead += TogglePlayerMovement;
+	}
+
+	void UnsubscribeEvents () {
+		SceneTransition.OnTransitionBegin -= (fadeToBlack) => TogglePlayerMovement(!fadeToBlack);
+		MessageComponent.OnMessageRead -= TogglePlayerMovement;
 	}
 
 	// Creates the dictionary of enums to map between directions and states

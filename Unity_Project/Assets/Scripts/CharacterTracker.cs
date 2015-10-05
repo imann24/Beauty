@@ -5,7 +5,7 @@ public class CharacterTracker : MonoBehaviour {
 	public GameObject Player;
 
 	float zOffset = -10f;
-	float yOffset = 0.05f;
+	float yOffset = -0.2f;
 	// Use this for initialization
 	void Start () {
 		transform.position = Utility.TranslatePosition(transform.position, yTranslate:yOffset);

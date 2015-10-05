@@ -25,11 +25,9 @@ public class GameController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		SubscribeEvents();
 	}
 
 	void OnDestroy () {
-		UnsubscribeEvents();
 	}
 
 	// Update is called once per frame
@@ -44,7 +42,6 @@ public class GameController : MonoBehaviour {
 	}
 
 	void SubscribeEvents () {
-		TeleportArea.OnTeleportToLevel += BeginLoadScene;
 		SceneTransition.OnTransitionComplete += HandleOnTransitionComplete;
 	}
 
@@ -52,11 +49,13 @@ public class GameController : MonoBehaviour {
 		if (fadeToBlack && loadingScene) {
 			loadingScene = false;
 			Application.LoadLevel((int) targetScene);
+		} else if (fadeToBlack) {
+
 		}
 	}
 
 	void UnsubscribeEvents () {
-		TeleportArea.OnTeleportToLevel -= BeginLoadScene;
+		SceneTransition.OnTransitionComplete -= HandleOnTransitionComplete;
 	}
 
 	public void BeginLoadScene (Global.Scenes sceneToLoad) {

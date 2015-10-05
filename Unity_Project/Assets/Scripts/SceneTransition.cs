@@ -6,7 +6,9 @@ public class SceneTransition : MonoBehaviour {
 
 	public SceneTransition Instance;
 	public delegate void TransitionCompleteAction (bool fadeToBlack);
+	public delegate void TransitionBeginAction (bool fadeToBlack);
 	public static event TransitionCompleteAction OnTransitionComplete;
+	public static event TransitionBeginAction OnTransitionBegin;
 	CanvasGroup canvasGroup;
 	
 	void Awake () {
@@ -36,27 +38,40 @@ public class SceneTransition : MonoBehaviour {
 	
 	}
 
-	void TransitionOutOfScene (Global.Scenes sceneToLoad) {
+	void TransitionOutOfScene (Global.Scenes sceneToLoad = Global.Scenes.Id) {
 		Debug.Log("Fading in");
 		StartCoroutine(LerpCanvasOpacity(1.0f));
 	}
 
-	void TransitionIntoScene (Global.Scenes currentScene) {
+	void TransitionOutOfRoom (Global.Rooms roomToLoad) {
+		TransitionOutOfScene();
+	}
+
+	void TransitionIntoScene (Global.Scenes currentScene = Global.Scenes.Id) {
 		Debug.Log("Fading out");
 		StartCoroutine(LerpCanvasOpacity(0.0f));
 	}
+	
 
 	void SubscribeReferences () {
-		GameController.OnLoadLevel += TransitionOutOfScene;
+		GameController.OnLoadLevel +=  TransitionOutOfScene;
 		GameController.OnEnterLevel += TransitionIntoScene;
+		TeleportArea.OnTeleportToRoom += TransitionOutOfRoom;
+		OnTransitionComplete += HandleTransitionComplete;
 	}
 
 	void UnsubscribeReferences () {
 		GameController.OnLoadLevel -= TransitionOutOfScene;
 		GameController.OnEnterLevel -= TransitionIntoScene;
+		TeleportArea.OnTeleportToRoom -= TransitionOutOfRoom;
+		OnTransitionComplete -= HandleTransitionComplete;
 	}
 
 	IEnumerator LerpCanvasOpacity (float targetOpacity) {
+		if (OnTransitionBegin != null) {
+			OnTransitionBegin(targetOpacity == 1.0f);
+		}
+
 		float numSteps = 60f;
 		float step = (targetOpacity - canvasGroup.alpha)/numSteps;
 		for (int i = 0; i < numSteps; i++) {
@@ -68,6 +83,12 @@ public class SceneTransition : MonoBehaviour {
 
 		if (OnTransitionComplete != null) {
 			OnTransitionComplete(targetOpacity == 1.0f);
+		}
+	}
+
+	void HandleTransitionComplete (bool fadeToBlack) {
+		if (fadeToBlack) {
+			TransitionIntoScene();
 		}
 	}
 }

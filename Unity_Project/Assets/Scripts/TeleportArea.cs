@@ -2,9 +2,10 @@
 using System.Collections;
 
 public class TeleportArea : MonoBehaviour {
-	public Global.Scenes TargetLevel;
-	public delegate void TeleportToLevelAction (Global.Scenes sceneToLoad);
-	public static event TeleportToLevelAction OnTeleportToLevel;
+	public static bool Teleporting;
+	public Global.Rooms TargetRoom;
+	public delegate void TeleportToRoomAction (Global.Rooms TargetRoom);
+	public static event TeleportToRoomAction OnTeleportToRoom;
 	// Use this for initialization
 	void Start () {
 	
@@ -16,8 +17,10 @@ public class TeleportArea : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D (Collider2D collider) {
-		if (OnTeleportToLevel != null) {
-			OnTeleportToLevel(TargetLevel);
+		Debug.Log("Calling the event from " + gameObject.name);
+		if (!Teleporting && OnTeleportToRoom != null) {
+			OnTeleportToRoom(TargetRoom);
+			Teleporting = true;
 		}
 	}
 }

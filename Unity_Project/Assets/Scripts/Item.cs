@@ -14,7 +14,7 @@ public class Item : MonoBehaviour {
 	public string [] Messages;
 	private int currentMessageIndex = 0;
 
-	private float maxGlowOpacity = 0.5f;
+	private float maxGlowOpacity = 1.0f;
 	private static string GlowObjectName = "Glow";
 	SpriteRenderer glowRenderer;
 
@@ -38,8 +38,12 @@ public class Item : MonoBehaviour {
 		return Messages[currentMessageIndex<Messages.Length-offset?currentMessageIndex++:currentMessageIndex];
 	}
 
+	public string ResetCurrentMessage () {
+		return Messages[currentMessageIndex = 0];
+	}
 	
 	public bool LastMessage (string currentMessage) {
+
 		return Messages.Length == 0 || Messages[Messages.Length-1].Contains(currentMessage);
 	}
 
