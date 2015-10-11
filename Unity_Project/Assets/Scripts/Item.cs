@@ -53,9 +53,10 @@ public class Item : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D (Collider2D collider) {
-		if (Messages.Length == 0) {
+		if (Messages.Length == 0 || ItemController.ActiveItem == this) {
 			return;
 		}
+
 		StartCoroutine(FadeOpacity(maxGlowOpacity));
 		if (collider.gameObject == Global.Player && OnMessage != null) {
 			OnMessage(Messages[0], true, this);
@@ -74,8 +75,14 @@ public class Item : MonoBehaviour {
 	}
 
 	void OnTriggerStay2D (Collider2D collider) {
+		if (glowRenderer.color.a == 0) {
+			return;
+		}
+
 		if (ItemController.ActiveItem != null && ItemController.ActiveItem != this) {
 			StartCoroutine(FadeOpacity(0));
+		} else if (ItemController.ActiveItem == null){
+			ItemController.ActiveItem = this;
 		}
 	}
 
@@ -103,6 +110,10 @@ public class Item : MonoBehaviour {
 		}
 
 		glowRenderer.color = currentColorOfSprite;
+	}
+
+	public override string ToString() {
+		return name;
 	}
 	
 }

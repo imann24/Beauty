@@ -7,9 +7,15 @@ public class AudioManager : MonoBehaviour {
 
 	public AudioClip IdMusic;
 
+	public AudioClip ObjectInteraction;
+	public AudioClip BugsCrawling;
+
 	public AudioManager Instance; 
 
 	private bool suppressOnLevelLoad;
+
+	const string DAD_CRYING_KEY = "DadCrying";
+
 	// Use this for initialization
 	void Awake () {
 		// Singleton Implementation 
@@ -23,7 +29,12 @@ public class AudioManager : MonoBehaviour {
 	}
 	
 	void Start () {
+		SubscribeEvents();
 		SetMusic(Global.Scenes.Id);
+	}
+
+	void OnDestroy () {
+		UnsubscribeEvents();
 	}
 
 	void OnLevelWasLoaded (int level) {
@@ -39,5 +50,48 @@ public class AudioManager : MonoBehaviour {
 			Music.clip = IdMusic;
 			Music.Play();
 		}
+	}
+
+	void PlayObjectInteractionSFX () {
+		SFX.clip = ObjectInteraction;
+		SFX.Play();
+	}
+
+	void PlayBugSFX () {
+		SFX.clip = BugsCrawling;
+		SFX.Play();
+	}
+
+	void SubscribeEvents () {
+		PlayAnimationOnCollide.OnAnimationPlay += HandleAnimationTriggered;
+		MessageComponent.OnMessageRead += HandleItemInteraction;
+		TeleportArea.OnTeleportToRoom += HandleRoomChange;
+	}
+
+	void UnsubscribeEvents () {
+		PlayAnimationOnCollide.OnAnimationPlay -= HandleAnimationTriggered;
+		MessageComponent.OnMessageRead -= HandleItemInteraction;
+		TeleportArea.OnTeleportToRoom -= HandleRoomChange;
+	}
+
+	void HandleAnimationTriggered (string animationTrigger) {
+		if (IsBugAnimation(animationTrigger)) {
+			PlayBugSFX();
+		}
+	}
+
+	void HandleItemInteraction (bool interactionDone) {
+		if (!interactionDone) {
+			PlayObjectInteractionSFX();
+		}
+	}
+
+	void HandleRoomChange (Global.Rooms NewRoom) {
+		ProximityAudioController.Controllers[DAD_CRYING_KEY].ToggleAudio(NewRoom == Global.Rooms.HallwayLeft || 
+		                                                                 NewRoom == Global.Rooms.HallwayRight);
+	}
+
+	bool IsBugAnimation (string animationTrigger) {
+		return animationTrigger.Contains("Bug");
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GameController : MonoBehaviour {
@@ -6,10 +7,15 @@ public class GameController : MonoBehaviour {
 
 	public delegate void LoadLevelAction (Global.Scenes sceneToLoad);
 	public delegate void EnterLevelAction (Global.Scenes currentScene);
-	
+	public delegate void StartGameAction ();
+
 	public static event LoadLevelAction OnLoadLevel;
 	public static event	EnterLevelAction OnEnterLevel;
+	public static event StartGameAction OnStartGame;
 
+	public bool GameStart {get; private set;}
+
+	bool instructionScreenActive = true;
 	bool loadingScene;
 	Global.Scenes targetScene;
 
@@ -25,14 +31,21 @@ public class GameController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		SubscribeEvents();
 	}
 
 	void OnDestroy () {
+		UnsubscribeEvents();
 	}
 
 	// Update is called once per frame
 	void Update () {
-	
+		if (Input.anyKeyDown && !GameStart && !instructionScreenActive) {
+			GameStart = true;
+			if (OnStartGame != null) {
+				OnStartGame();
+			}
+		}
 	}
 
 	void OnLevelWasLoaded (int level) {
@@ -42,7 +55,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	void SubscribeEvents () {
-		SceneTransition.OnTransitionComplete += HandleOnTransitionComplete;
+		CanvasGroupController.OnInstructionsFadeOutFinished += HandleOnInstructionsFadeOutFinished;
 	}
 
 	void HandleOnTransitionComplete (bool fadeToBlack) {
@@ -54,8 +67,12 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	void HandleOnInstructionsFadeOutFinished () {
+		instructionScreenActive = false;
+	}
+
 	void UnsubscribeEvents () {
-		SceneTransition.OnTransitionComplete -= HandleOnTransitionComplete;
+		CanvasGroupController.OnInstructionsFadeOutFinished -= HandleOnInstructionsFadeOutFinished;
 	}
 
 	public void BeginLoadScene (Global.Scenes sceneToLoad) {

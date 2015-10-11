@@ -6,7 +6,7 @@ public class Global {
 	public static float GLOW_DISTANCE = 5.0f;
 
 	public enum Scenes {Id, Ego, SuperEgo};
-	public enum Rooms {BedroomLeft, BedroomRight, HallwayLeft, HallwayRight, OutsideLeft};
+	public enum Rooms {BedroomLeft, BedroomRight, HallwayLeft, HallwayRight, OutsideLeft, OutsideRight, CreditsLeft, CreditsRight};
 
 	public enum Direction {Left, Right, Up, Down, None};
 	public const int DIRECTION_COUNT = 5;

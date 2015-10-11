@@ -39,7 +39,6 @@ public class SceneTransition : MonoBehaviour {
 	}
 
 	void TransitionOutOfScene (Global.Scenes sceneToLoad = Global.Scenes.Id) {
-		Debug.Log("Fading in");
 		StartCoroutine(LerpCanvasOpacity(1.0f));
 	}
 
@@ -48,7 +47,6 @@ public class SceneTransition : MonoBehaviour {
 	}
 
 	void TransitionIntoScene (Global.Scenes currentScene = Global.Scenes.Id) {
-		Debug.Log("Fading out");
 		StartCoroutine(LerpCanvasOpacity(0.0f));
 	}
 	

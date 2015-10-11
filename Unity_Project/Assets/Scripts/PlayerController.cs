@@ -28,9 +28,12 @@ public class PlayerController : MonoBehaviour {
 
 	Item currentItemHoveringOver; 
 
+	// For animations
 	const string STOP_TRIGGER = "Stopping";
 	const string LEFT_TRIGGER = "WalkingLeft";
 	const string RIGHT_TRIGGER = "WalkingRight";
+	const string MOTHER_TRIGGER = "AddMother";
+	const string REMOVE_MOTHER_TRIGGER = "RemoveMother";
 
 	public enum State {WalkingLeft, WalkingRight, WalkingUp, WalkingDown, Stoppped};
 	State currentState;
@@ -49,7 +52,6 @@ public class PlayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		bool noMovement = true;
-
 		
 		State primaryState = State.Stoppped;
 
@@ -138,6 +140,12 @@ public class PlayerController : MonoBehaviour {
 			return;
 		}
 
+		if (CheckForNoMovement() || Input.GetKeyDown(KeyCode.Space)) {
+			UpdateAnimation(State.Stoppped);
+		} else {
+			animator.ResetTrigger(STOP_TRIGGER);
+		}
+
 		rigibody.isKinematic = false;
 
 		if (direction == Global.Direction.Left) {
@@ -195,7 +203,6 @@ public class PlayerController : MonoBehaviour {
 	
 	void UpdateState (State updatedState) {
 		if (updatedState != currentState) {
-			Debug.Log("Changed direction to " + updatedState);
 			currentState = updatedState;
 			UpdateAnimation(updatedState);
 		}
@@ -227,13 +234,49 @@ public class PlayerController : MonoBehaviour {
 	void SubscribeEvents () {
 		SceneTransition.OnTransitionBegin += (fadeToBlack) => TogglePlayerMovement(!fadeToBlack);
 		MessageComponent.OnMessageRead += TogglePlayerMovement;
+		TeleportArea.OnTeleportToRoom += HandleOnTeleportToRoom;
+		GameController.OnStartGame += HandleOnStartGame;
 	}
-
+	
 	void UnsubscribeEvents () {
 		SceneTransition.OnTransitionBegin -= (fadeToBlack) => TogglePlayerMovement(!fadeToBlack);
 		MessageComponent.OnMessageRead -= TogglePlayerMovement;
+		TeleportArea.OnTeleportToRoom -= HandleOnTeleportToRoom;
+		GameController.OnStartGame -= HandleOnStartGame;
 	}
 
+	void HandleOnTeleportToRoom (Global.Rooms TargetRoom) {
+		StartCoroutine(TimedAnimationTransition(TargetRoom));
+	}
+
+	void HandleOnStartGame () {
+		CanMove = true;
+	}
+
+	bool CheckForNoMovement () {
+		return !Input.anyKey;
+	}
+
+	IEnumerator TimedAnimationTransition (Global.Rooms TargetRoom) {
+		yield return new WaitForSeconds(0.9f);
+
+		Vector2 colliderOffset = myCollider.offset;
+
+		if (TargetRoom == Global.Rooms.OutsideLeft ||
+		    TargetRoom == Global.Rooms.OutsideRight) {
+			animator.SetTrigger(MOTHER_TRIGGER);
+			transform.Translate(Vector2.up);
+			colliderOffset.y = -1.0f;
+		} else if (TargetRoom == Global.Rooms.HallwayRight || 
+		           TargetRoom == Global.Rooms.CreditsLeft) {
+			animator.SetTrigger(REMOVE_MOTHER_TRIGGER);
+			transform.Translate(Vector2.down);
+			colliderOffset.y = -0.75f;
+		}
+
+
+		myCollider.offset = colliderOffset;
+	}
 	// Creates the dictionary of enums to map between directions and states
 	public static void InitializeDictionary () {
 		if (DirectionToState.Count == 0) {

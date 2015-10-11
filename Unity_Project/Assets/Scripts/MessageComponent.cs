@@ -17,7 +17,7 @@ public class MessageComponent : MonoBehaviour {
 
 	private Item currentItem;
 	private string currentMessage;
-
+	private bool messageShown;
 
 	// Use this for initialization
 	void Start () {
@@ -30,8 +30,11 @@ public class MessageComponent : MonoBehaviour {
 	}
 
 	public void NextMessage () {
+		currentItem = ItemController.ActiveItem;
 		if (currentItem != null) {
-			showMessage();
+			if (!messageShown) {
+				showMessage();
+			}
 			string nextMessage = currentItem.ReadMessage();
 			if (!string.IsNullOrEmpty(messageText.text) && currentItem.LastMessage(messageText.text) || revealingTheText) {
 				if (OnMessageRead != null && !revealingTheText) {
@@ -71,10 +74,12 @@ public class MessageComponent : MonoBehaviour {
 	}
 
 	void hideMessage () {
+		messageShown = false;
 		StartCoroutine(LerpCanvasOpacity(0.0f));
 	}
 
 	void showMessage () {
+		messageShown = true;
 		if (OnMessageRead != null) {
 			OnMessageRead(false);
 		}
@@ -115,7 +120,7 @@ public class MessageComponent : MonoBehaviour {
 			yield return new WaitForSeconds(pause/2f);
 		}
 		revealingTheText = true;
-		for (int i = 0; i < currentMessage.Length; i++) {
+		for (int i = 0; i <= currentMessage.Length; i++) {
 			if (Input.GetKey(KeyCode.Space)) {
 				speed = fastSpeed;
 			} else {

@@ -17,7 +17,6 @@ public class TeleportArea : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D (Collider2D collider) {
-		Debug.Log("Calling the event from " + gameObject.name);
 		if (!Teleporting && OnTeleportToRoom != null) {
 			OnTeleportToRoom(TargetRoom);
 			Teleporting = true;

@@ -4,12 +4,18 @@ using System.Collections;
 
 public class ItemController : MonoBehaviour {
 	public static Item ActiveItem;
+	public static Item PreviousItem;
 
 	// Use this for initialization
 	void Start () {
 		assignItemMessages();
+		SubscribeEvents();
 	}
-	
+
+	void OnDestroy () {
+		UnsubscribeEvents();
+	}
+
 	// Update is called once per frame
 	void Update () {
 	
@@ -38,5 +44,18 @@ public class ItemController : MonoBehaviour {
 				Debug.LogWarning(item + " does not exist in the scene");
 			}
 		}
+	}
+
+	private void SubscribeEvents () {
+		Item.OnMessage += HandleOnMessage;
+	}
+
+	private void UnsubscribeEvents () {
+		Item.OnMessage -= HandleOnMessage;
+	}
+
+	private void HandleOnMessage (string message, bool playerEnteringZone, Item eventSource) {
+		PreviousItem = ActiveItem;
+		ActiveItem = playerEnteringZone?eventSource:null;
 	}
 }
