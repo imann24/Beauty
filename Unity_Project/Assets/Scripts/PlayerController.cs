@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour {
 
 	bool touchingGround = false;
 	bool touchingLadder = false;
+	bool onInstructionScreen = true;
 
 	Item currentItemHoveringOver; 
 
@@ -51,6 +52,11 @@ public class PlayerController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+		if (onInstructionScreen) {
+			return;
+		}
+
 		bool noMovement = true;
 		
 		State primaryState = State.Stoppped;
@@ -111,9 +117,9 @@ public class PlayerController : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D collider) {
 		if (collider.gameObject.name.Contains(Global.LADDER)) {
 			touchingLadder = true;
-			myCollider.isTrigger = true;
+			//myCollider.isTrigger = true;
 		} else if (collider.gameObject.name.Contains(Global.PLATFORM) && touchingGround == false ) {
-			myCollider.isTrigger = false;
+			//myCollider.isTrigger = false;
 			touchingLadder = false;
 			touchingGround = true;
 		} else if (collider.gameObject.name.Contains(Global.ITEM)) {
@@ -128,7 +134,7 @@ public class PlayerController : MonoBehaviour {
 	void OnTriggerExit2D (Collider2D collider) {
 		if (collider.gameObject.name.Contains(Global.LADDER)) {
 			touchingLadder = false;
-			myCollider.isTrigger = false;
+			//myCollider.isTrigger = false;
 		} else if (collider.gameObject.name.Contains(Global.ITEM)) {
 			Notifications.Instance.SetNotification("", Notifications.Notification.BottomScreen);
 			currentItemHoveringOver = null;
@@ -140,7 +146,7 @@ public class PlayerController : MonoBehaviour {
 			return;
 		}
 
-		if (CheckForNoMovement() || Input.GetKeyDown(KeyCode.Space)) {
+		if (CheckForNoMovement() || (Input.GetKeyDown(KeyCode.Space) && ItemController.ActiveItem != null)) {
 			UpdateAnimation(State.Stoppped);
 		} else {
 			animator.ResetTrigger(STOP_TRIGGER);
@@ -250,6 +256,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void HandleOnStartGame () {
+		onInstructionScreen = false;
 		CanMove = true;
 	}
 

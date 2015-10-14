@@ -8,6 +8,7 @@ public class ProximityAudioController : MonoBehaviour {
 	public static Dictionary<string, ProximityAudioController> Controllers = new Dictionary<string, ProximityAudioController>();
 	public Transform ProximityObject;
 	public float SizeOfSpace;
+	public float MaxVolume;
 
 	AudioSource audioSource;
 	bool audioActive;
@@ -26,7 +27,7 @@ public class ProximityAudioController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (audioActive) {
-			audioSource.volume = 1.0f - Mathf.Clamp01(Vector2.Distance(transform.position, ProximityObject.position)/SizeOfSpace);
+			audioSource.volume = Mathf.Clamp(1.0f - Mathf.Clamp01(Vector2.Distance(transform.position, ProximityObject.position)/SizeOfSpace), 0, MaxVolume);
 		}
 	}
 

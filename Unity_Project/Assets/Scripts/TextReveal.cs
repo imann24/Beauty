@@ -31,7 +31,7 @@ public class TextReveal : MonoBehaviour {
 	}
 
 	IEnumerator RevealText (float waitTime = 0.0f) {
-		float normalSpeed = 0.1f;
+		float normalSpeed = 0.15f;
 		float acceleratedSpeed = 0.5f;
 		float speed = normalSpeed;
 
