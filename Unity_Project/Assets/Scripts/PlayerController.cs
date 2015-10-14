@@ -273,7 +273,7 @@ public class PlayerController : MonoBehaviour {
 		    TargetRoom == Global.Rooms.OutsideRight) {
 			animator.SetTrigger(MOTHER_TRIGGER);
 			transform.Translate(Vector2.up);
-			colliderOffset.y = -1.0f;
+			colliderOffset.y = -1.15f;
 		} else if (TargetRoom == Global.Rooms.HallwayRight || 
 		           TargetRoom == Global.Rooms.CreditsLeft) {
 			animator.SetTrigger(REMOVE_MOTHER_TRIGGER);
